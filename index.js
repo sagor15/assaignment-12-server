@@ -1,9 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
-const port =process.env.PORT || 5000;
+const port = process.env.PORT || 5000;
 
 
 // midlewere
@@ -16,15 +16,45 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 
-async function run(){
-  try{
+async function run() {
+  try {
     await client.connect();
     console.log('database connected');
 
-    const productCollection =  client.db('auto_parts').collection('products');
+    const productCollection = client.db('auto_parts').collection('products');
+    const bookingCollection = client.db('auto_parts').collection('booking');
+
+    app.get('/product', async (req, res) => {
+      const query = {};
+      const products = await productCollection.find(query).toArray();
+      res.send(products);
+
+
+
+
+
+      app.get('/product/:id', async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: ObjectId(id) };
+        const buy = await productCollection.findOne(query);
+        res.send(buy);
+        
+      });
+      app.post('/booking', async(req,res)=>{
+        const booking = req.body;
+        const result = await bookingCollection.insertOne(booking);
+        res.send(result);
+      })
+
+
+
+
+
+
+    })
   }
-  finally{
-    
+  finally {
+
   }
 
 }
