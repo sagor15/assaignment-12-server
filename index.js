@@ -40,10 +40,19 @@ async function run() {
         res.send(buy);
         
       });
+
+      app.get('/booking',async(req,res)=>{
+        const user= req.query.user;
+        const query = {user:user};
+        const allbookings = await bookingCollection.find(query).toArray();
+        res.send(allbookings);
+      })
+
+
       app.post('/booking', async(req,res)=>{
         const booking = req.body;
-        const result = await bookingCollection.insertOne(booking);
-        res.send(result);
+        const allbookings = await bookingCollection.insertOne(booking);
+        res.send(allbookings);
       })
 
 
