@@ -31,6 +31,30 @@ async function run() {
       const products = await productCollection.find(query).toArray();
       res.send(products);
 
+      app.get('/user',async(req,res)=>{
+        const user = await userCollection.find().toArray();
+        res.send(user);
+      })
+
+     app.get('/admin/:email',async(req,res)=>{
+       const email = req.params.email;
+       const user = await userCollection.findOne({email:email});
+       const isAdmin = user.role === 'admin';
+       res.send({admin:isAdmin});
+     })
+
+      app.put('/user/admin/:email',async(req,res)=>{
+        const email = req.params.email;   
+        const filter = {email:email};
+        const updateDoc = {
+          $set: {role:'admin'},
+      };
+      const result = await userCollection.updateOne(filter, updateDoc);
+      
+      res.send(result)
+      })
+
+
 
       app.put('/user/:email',async(req,res)=>{
         const email = req.params.email;
@@ -41,6 +65,7 @@ async function run() {
           $set: user,
       };
       const result = await userCollection.updateOne(filter, updateDoc, options);
+     
       res.send(result)
       })
 
@@ -55,6 +80,8 @@ async function run() {
 
       app.get('/booking',async(req,res)=>{
         const user= req.query.user;
+        // const authoraization = req.headers.authorization;
+        // console.log('this is ',authoraization);
         const query = {user:user};
         const allbookings = await bookingCollection.find(query).toArray();
         res.send(allbookings);
@@ -69,7 +96,23 @@ async function run() {
 
 
 
-
+      app.post('/create-payment-intent', async (req, res) => {
+        const service = req.body;
+        const price = service.price;
+        const amount = price*100;
+        
+        // Create a PaymentIntent with the order amount and currency
+        const paymentIntent = await stripe.paymentIntents.create({
+          amount: amount,
+          currency: "usd",
+          payment_method_types: [
+            "card"
+          ]
+        });
+        res.send({
+            clientSecret: paymentIntent.client_secret,
+          });
+        });
 
 
     })
