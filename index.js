@@ -51,9 +51,9 @@ async function run() {
         const updateDoc = {
           $set: { role: 'admin' },
         };
-        const result = await userCollection.updateOne(filter, updateDoc);
+        const results = await userCollection.updateOne(filter, updateDoc);
 
-        res.send(result)
+        res.send(results)
       })
 
 
