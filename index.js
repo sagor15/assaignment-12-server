@@ -27,53 +27,54 @@ async function run() {
     const bookingCollection = client.db('auto_parts').collection('booking');
     const userCollection = client.db('auto_parts').collection('user');
 
+    // product api 
     app.get('/product', async (req, res) => {
       const query = {};
       const products = await productCollection.find(query).toArray();
       res.send(products);
-
-      app.get('/user',async(req,res)=>{
+// user api 
+      app.get('/user', async (req, res) => {
         const user = await userCollection.find().toArray();
         res.send(user);
       })
-
-     app.get('/admin/:email',async(req,res)=>{
-       const email = req.params.email;
-       const user = await userCollection.findOne({email:email});
-       const isAdmin = user.role === 'admin';
-       res.send({admin:isAdmin});
-     })
-
-      app.put('/user/admin/:email',async(req,res)=>{
-        const email = req.params.email;   
-        const filter = {email:email};
+// admin id sepefic
+      app.get('/admin/:email', async (req, res) => {
+        const email = req.params.email;
+        const user = await userCollection.findOne({ email: email });
+        const isAdmin = user.role === 'admin';
+        res.send({ admin: isAdmin });
+      })
+// user admin email api
+      app.put('/user/admin/:email', async (req, res) => {
+        const email = req.params.email;
+        const filter = { email: email };
         const updateDoc = {
-          $set: {role:'admin'},
-      };
-      const result = await userCollection.updateOne(filter, updateDoc);
-      
-      res.send(result)
+          $set: { role: 'admin' },
+        };
+        const result = await userCollection.updateOne(filter, updateDoc);
+
+        res.send(result)
       })
 
 
-    //   app.delete('/user/:email', async (req, res) => {
-    //     const email = req.params.email;
-    //     const filter = { email: email }
-    //     const result = await doctorCollection.deleteOne(filter);
-    //     res.send(result);
-    // })
+      //   app.delete('/user/:email', async (req, res) => {
+      //     const email = req.params.email;
+      //     const filter = { email: email }
+      //     const result = await doctorCollection.deleteOne(filter);
+      //     res.send(result);
+      // })
 
-      app.put('/user/:email',async(req,res)=>{
+      app.put('/user/:email', async (req, res) => {
         const email = req.params.email;
         const user = req.body;
-        const filter = {email:email};
-        const options = {upsert:true};
+        const filter = { email: email };
+        const options = { upsert: true };
         const updateDoc = {
           $set: user,
-      };
-      const result = await userCollection.updateOne(filter, updateDoc, options);
-     
-      res.send(result)
+        };
+        const result = await userCollection.updateOne(filter, updateDoc, options);
+
+        res.send(result)
       })
 
 
@@ -82,44 +83,44 @@ async function run() {
         const query = { _id: ObjectId(id) };
         const buy = await productCollection.findOne(query);
         res.send(buy);
-        
+
       });
 
-      app.get('/booking',async(req,res)=>{
-        const user= req.query.user;
+      app.get('/booking', async (req, res) => {
+        const user = req.query.user;
         // const authoraization = req.headers.authorization;
         // console.log('this is ',authoraization);
-        const query = {user:user};
+        const query = { user: user };
         const allbookings = await bookingCollection.find(query).toArray();
         res.send(allbookings);
       })
 
 
-      app.post('/booking', async(req,res)=>{
+      app.post('/booking', async (req, res) => {
         const booking = req.body;
         const allbookings = await bookingCollection.insertOne(booking);
         res.send(allbookings);
       })
-    //   app.delete('/booking/:id', async (req, res) => {
-    //     const id = req.params.email;
-    //     const filter = { email: email }
-    //     const result = await doctorCollection.deleteOne(filter);
-    //     res.send(result);
-    // })
+      //   app.delete('/booking/:id', async (req, res) => {
+      //     const id = req.params.email;
+      //     const filter = { email: email }
+      //     const result = await doctorCollection.deleteOne(filter);
+      //     res.send(result);
+      // })
 
       app.get('/booking/:id', async (req, res) => {
         const id = req.params.id;
         const query = { _id: ObjectId(id) };
         const booking = await bookingCollection.findOne(query);
         res.send(booking);
-    })
+      })
 
 
       // app.post('/create', async (req, res) => {
       //   const service = req.body;
       //   const price = service.price;
       //   const amount = price*100;
-        
+
       //   // Create a PaymentIntent with the order amount and currency
       //   const paymentIntent = await stripe.paymentIntents.create({
       //     amount: amount,
