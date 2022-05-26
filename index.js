@@ -8,7 +8,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 
-// midlewere
+// midlewere this api
 app.use(cors());
 app.use(express.json());
 
